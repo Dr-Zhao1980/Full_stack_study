@@ -1,8 +1,13 @@
 # To do list：
 
-1，学习两个服务器测试的指令
-a,curl的指令
-b,uvicorn的指令（同时学习这个和普罗米修斯异同）
+- [ ] 一个http请求的一生
+- [ ] 记录项目如何启动，如何内网穿透
+- [ ] 添加一个新的功能：登录界面
+- [ ] 优化UI设计。
+- [ ] 添加一个网站，设置AI心情查询只是其中的一个功能。
+- [ ] 完整的一套启动流程
+- [ ] 前后端不同功能开放不同的端口
+
 
 # 项目结构：
 
@@ -44,7 +49,19 @@ b,uvicorn的指令（同时学习这个和普罗米修斯异同）
 
 15 directories, 18 files
 
-# 内网穿透
+# 一些常用的指令
+```bash
+lsof -i TCP:8080 #查看8080端口正在listen的进程
+lsof -c nginx -i #查看nginx正在listen的端口
+
+
+```
+
+
+
+
+
+# 内网穿透(cpolar)
 
 ```bash
 cd ~/Full_stack_study/mood-station/backend-python #进入目录
@@ -53,6 +70,126 @@ cpolar http 8000 #内网穿透，相当于把本地的8000端口映射到公网
 # 之后仔细看输出，等待Forwarding  https://35744ccd.r30.cpolar.top -> http://localhost:8000 这是内网穿透后的公网地址，之后可以直接使用https://35744ccd.r30.cpolar.top就可以
 # 至此，就可以获得内网的公网通行证。
 ```
+
+# 端口
+## 端口分类
+在一个计算机上，端口一共有**2^16-1**个，即**65535**个。（由于端口是由16位二进制数表示的，所以有 $2^{16}-1$个也就是从**0000000000000000**到**1111111111111111**）
+在端口的世界，我们有一些约定俗成的规定：
+| 范围          | 名称                             | 通常用途                             |
+| ----------- | ------------------------------ | -------------------------------- |
+| 0–1023      | **知名端口（Well-Known）**           | 公认服务，如 Web、FTP、邮件等核心协议。需管理员权限绑定。 |
+| 1024–49151  | **注册端口（Registered）**           | 注册给特定应用程序，程序可以申请使用。              |
+| 49152–65535 | **动态/私有端口（Dynamic / Private）** | 系统或客户端临时使用，用于短期连接等。              |
+## 通信协议：TCP vs UDP
+**TCP（Transmission Control Protocol）——“可靠、有序、面向连接”**
+TCP协议保证数据必须百分百传达：
+1. 保证数据的完整性：双方传输之前要先建立连接，保证双方状态一致，丢失之后会重新传输。
+2. 保证数据的可靠性：丢了会重传；有确认机制
+3. 保证数据的顺序性：按发送顺序交给应用层（不会乱序给你）
+4. 流量控制和阻塞控制：根据对方的网络状况，接受能力实时调整发送速度
+使用场景：必须百分百准确，比如网页，文件传输，数据库连接，ssh等。
+**UDP（User Datagram Protocol）——“轻量、无连接、尽力而为”**
+1. 无连接：不需要建立连接，直接发送数据包。
+2. 尽力而为：不保证数据的完整性，丢了不重传。
+3. 轻量：没有确认机制，没有流量控制和阻塞控制。
+使用场景：不介意丢包，比如视频，游戏，直播，语音通话等。
+
+
+## 开发过程中常用的端口
+我把全栈项目中常见的端口分为四大类：门面（Web服务）、核心（后端应用）、金库（数据库/存储）、后勤（运维/中间件）。
+| 分类             | 作用         | 常见端口号                 |
+| -------------- | ---------- | --------------------- |
+| **门面（Web 服务）** | 给用户 / 前端访问 | 80、443、8080、3000、5173 |
+| **核心（后端应用）**   | 业务逻辑服务     | 8080、8081、9000、7001   |
+| **金库（数据库/存储）** | 数据持久化      | 3306、5432、6379、27017  |
+| **后勤（中间件/运维）** | 支撑系统运行     | 5672、9092、9200、5601   |
+---
+**前端端口(用户可以直接访问，暴露在公网)**
+| 端口       | 用途       | 说明              |
+| -------- | -------- | --------------- |
+| **80**   | HTTP     | 默认 Web 端口       |
+| **443**  | HTTPS    | 生产环境标准          |
+| **8080** | HTTP（替代） | 开发/测试最常见        |
+| **3000** | 前端开发     | React / Next.js |
+| **5173** | 前端开发     | Vite 默认         |
+---
+**后端端口(一般不会直接暴露在公网)**
+| 端口              | 场景                    |
+| --------------- | --------------------- |
+| **8080**        | Spring Boot / Java 后端 |
+| **8081 / 8082** | 多服务区分                 |
+| **9000**        | 内部服务（很常见）             |
+| **7001**        | 传统 Java 应用            |
+---
+**数据库端口(字面意思，存放数据)**
+| 端口        | 系统            |
+| --------- | ------------- |
+| **3306**  | MySQL         |
+| **5432**  | PostgreSQL    |
+| **6379**  | Redis         |
+| **27017** | MongoDB       |
+| **9200**  | Elasticsearch |
+---
+**后勤端口(中间内容，运维内容)**
+| 端口       | 系统        |
+| -------- | --------- |
+| **5672** | RabbitMQ  |
+| **9092** | Kafka     |
+| **2181** | Zookeeper |
+| **5601** | Kibana    |
+| **9411** | Zipkin    |
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# git的提交规范(commit format)
+
+| type         | 含义     | 使用场景         |
+| ------------ | ------ | ------------ |
+| **feat**     | 新功能    | 新增功能         |
+| **fix**      | 修复 Bug | 修 bug        |
+| **docs**     | 文档     | README / 注释  |
+| **style**    | 代码格式   | 空格、分号、不影响逻辑  |
+| **refactor** | 重构     | 不新增功能、不修 bug |
+| **test**     | 测试     | 单元测试、e2e     |
+| **chore**    | 杂项     | 构建、脚本、依赖     |
+
+格式举例：
+```bash
+git commit -m "feat(user): 新增用户登录功能"
+git commit -m "fix(order): 修复订单金额计算错误"
+git commit -m "style(user): 格式化用户模块代码"
+git commit -m "refactor(auth): 重构权限校验逻辑"
+git commit -m "docs(readme): 补充项目启动说明"
+git commit -m "test(order): 增加订单模块单元测试"
+git commit -m "chore(deps): 升级 axios 到 1.6.0"
+git commit -m "perf(list): 优化列表渲染性能"
+git commit -m "ci(github): 添加 GitHub Actions 自动部署"
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 # uvicorn的使用方法
 
@@ -545,13 +682,129 @@ java设计会有很多的规范，比如`Model + Service + Controller + Applicat
 ## 后端搭建
 
 在我的代码中，采用了双后端的方法，一个后端是python，另一个后端是java。
+在这两个代码中，python负责处理AI的逻辑，java负责处理文件的逻辑。
+python我撰写了`main.py`，java我撰写了`DemoApplication.java`，`MoodController.java`，`FileService.java`，`MoodRecord.java`，`pom.xml`这几个文件。
+
+其中
+`main.py`是python的启动文件
+`DemoApplication.java`是java的启动文件
+`MoodController.java`是java的接口文件
+`FileService.java`是java的业务逻辑文件
+`MoodRecord.java`是java的数据定义文件
+`pom.xml`是java的项目配置文件
+
+## 所有代码的路径：
+
+### 前端代码
+[前端代码App.vue](../frontend/src/App.vue)
+[前端代码main.js](../frontend/src/main.js)
+[前端代码index.html](../frontend/index.html)
+[前端代码vite.config.js](../frontend/vite.config.js)
+[前端代码package.json](../frontend/package.json)
+
+### 后端代码(Java)
+
+[后端代码DemoApplication.java](../backend-java/src/main/java/com/example/demo/DemoApplication.java)
+[后端代码MoodController.java](../backend-java/src/main/java/com/example/demo/controller/MoodController.java)
+[后端代码FileService.java](../backend-java/src/main/java/com/example/demo/utils/FileService.java)
+[后端代码MoodRecord.java](../backend-java/src/main/java/com/example/demo/model/MoodRecord.java)
+[后端代码pom.xml](../backend-java/pom.xml)
+
+### 后端代码(Python)
+
+[后端代码main.py](../backend-python/main.py)
+[后端代码requirements.txt](../backend-python/requirements.txt)
 
 
 
-
+# 全栈启动+内网穿透
 
 
 # 一个http请求的一生
 接下来，我们举一个非常具体的例子来解释一个请求的一生：
 
-1，用户前端vue
+1. 用户首先撰写内容，然后点击发送按钮。
+2. 浏览器做DNS解析，具体算法可以查阅，大致原理就是将目标域名`6ea2367d.r30.cpolar.top`转换成cpolar的IP地址`**.*.*.*`。
+3. 浏览器于cpolar服务器建立TCP连接，做TLS握手，然后发送Http请求：
+```http
+POST /api/mood HTTP/1.1
+Host: 6ea2367d.r30.cpolar.top
+Content-Type: application/json
+Content-Length: 23
+
+{"username": "zzn16", "text": "今天天气真好！"}
+```
+4. cpolar服务器接收到请求后，将请求转发到我的电脑的8080端口。(`http://localhost:8080`)
+5. 通过8080端口找到正在listen的进程：`java    32236 zzn16   36u  IPv6 16615863      0t0  TCP *:http-alt (LISTEN)`，这个是一个java进程。
+```vue
+    const response = await axios.post('/api/mood', {
+      username: "zzn16", 
+      text: inputMood.value
+      });
+```
+请求会现根据`/api/mood`找到`MoodController.java`，然后将`username`和`text`传入。
+
+6. Tomcat接受前端的请求(请求的格式类似下面这个)，然后将字节变成Request/Response
+```http
+POST /api/mood HTTP/1.1
+Host: 6ea2367d.r30.cpolar.top
+Content-Type: application/json
+Content-Length: 23
+
+{"username": "zzn16", "text": "今天天气真好！"}
+```
+7. Servlet 容器分发到 Spring —— DispatcherServlet（总调度）
+spring这里看了一下filter，发现符合规则，所以就让这个消息传入，
+[后端代码MoodController.java](../backend-java/src/main/java/com/example/demo/controller/MoodController.java)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

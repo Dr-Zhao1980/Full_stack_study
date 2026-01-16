@@ -29,11 +29,15 @@ const sendMood = async () => {
 
   try {
     // 发送请求给 Java 后端
-    const response = await axios.post('https://6ea2367d.r30.cpolar.top/api/mood', {
+    // const response = await axios.post('https://6ea2367d.r30.cpolar.top/api/mood', {
+    //   username: "zzn16", 
+    //   text: inputMood.value
+    // });
+    const response = await axios.post('/api/mood', {
       username: "zzn16", 
       text: inputMood.value
-    });
-    
+      });
+    //使用相对路径
     // 把后端返回的菜，放到我们的盘子里
     aiResult.value = response.data; 
     
