@@ -78,7 +78,8 @@ __pycache__/
 .venv/
 venv/
 env/
-
+alice.json
+zzn16.json
 # pip 的一些构建/元数据目录（某些场景会出现）
 pip-wheel-metadata/
 
