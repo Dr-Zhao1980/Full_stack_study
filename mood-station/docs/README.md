@@ -7,6 +7,56 @@
 - [ ] 添加一个网站，设置AI心情查询只是其中的一个功能。
 - [ ] 完整的一套启动流程
 - [ ] 前后端不同功能开放不同的端口
+- [ ] Linux命令别名撰写
+
+# 一些额外的知识
+## latex
+不同的latex编译器有着不同的功能。
+| 名称                   | 核心用途一句话               |
+| -------------------- | --------------------- |
+| **pdfLaTeX**         | 传统、稳定、只适合英文           |
+| **LaTeX**            | 生成 DVI 的老方式（基本不用）     |
+| **LuaLaTeX**         | 现代 + 可编程 + Unicode    |
+| **XeLaTeX**          | 中文 / Unicode / 系统字体首选 |
+| **XeTeX**            | XeLaTeX 的底层引擎（很少直接用）  |
+| **ConTeXt**          | 另一套宏系统（不是 LaTeX）      |
+| **ConTeXt (LuaTeX)** | ConTeXt 的主流方式         |
+| **ConTeXt (pdfTeX)** | 老版 ConTeXt            |
+| **BibTeX**           | 文献数据库工具（不是编译器）        |
+
+## Linux中bash别名撰写
+打开~/.bashrc文件，添加以下内容：
+```bash
+alias cas='conda activate stack'
+alias cab='conda activate base'
+```
+类似这样的就可以添加代码的别名了
+
+
+## 查询文件信息
+```bash
+ls -lh 文件名   #查看文件信息(ls表示展示，-l表示详细信息(竖着写)，-h表示人类可读)
+ls -l --time=birth 文件名 #查看文件的创建时间
+ls -ls      # 表示将文件夹中的文件按照大小排列
+ls -ld      # 表示只查看文件夹的信息
+ls -R       # 表示递归查看文件夹中的文件
+stat 文件名  #查看文件的详细信息(stat)
+```
+
+
+
+| 你在干嘛        | 选哪个          |
+| ----------- | ------------ |
+| 英文论文        | **pdfLaTeX** |
+| 中文 / 中英混排   | **XeLaTeX**  |
+| README / 笔记 | **XeLaTeX**  |
+| 字体 / 自动化    | LuaLaTeX     |
+| 学术期刊强制要求    | 按模板          |
+
+
+
+
+
 
 
 # 项目结构：
@@ -705,14 +755,19 @@ python我撰写了`main.py`，java我撰写了`DemoApplication.java`，`MoodCont
 ### 后端代码(Java)
 
 [后端代码DemoApplication.java](../backend-java/src/main/java/com/example/demo/DemoApplication.java)
+
 [后端代码MoodController.java](../backend-java/src/main/java/com/example/demo/controller/MoodController.java)
+
 [后端代码FileService.java](../backend-java/src/main/java/com/example/demo/utils/FileService.java)
+
 [后端代码MoodRecord.java](../backend-java/src/main/java/com/example/demo/model/MoodRecord.java)
+
 [后端代码pom.xml](../backend-java/pom.xml)
 
 ### 后端代码(Python)
 
 [后端代码main.py](../backend-python/main.py)
+
 [后端代码requirements.txt](../backend-python/requirements.txt)
 
 
@@ -723,6 +778,7 @@ python我撰写了`main.py`，java我撰写了`DemoApplication.java`，`MoodCont
 # 一个http请求的一生
 接下来，我们举一个非常具体的例子来解释一个请求的一生：
 
+---
 1. 用户首先撰写内容，然后点击发送按钮。
 2. 浏览器做DNS解析，具体算法可以查阅，大致原理就是将目标域名`6ea2367d.r30.cpolar.top`转换成cpolar的IP地址`**.*.*.*`。
 3. 浏览器于cpolar服务器建立TCP连接，做TLS握手，然后发送Http请求：
@@ -736,48 +792,167 @@ Content-Length: 23
 ```
 4. cpolar服务器接收到请求后，将请求转发到我的电脑的8080端口。(`http://localhost:8080`)
 5. 通过8080端口找到正在listen的进程：`java    32236 zzn16   36u  IPv6 16615863      0t0  TCP *:http-alt (LISTEN)`，这个是一个java进程。
-```vue
-    const response = await axios.post('/api/mood', {
-      username: "zzn16", 
-      text: inputMood.value
-      });
-```
-请求会现根据`/api/mood`找到`MoodController.java`，然后将`username`和`text`传入。
+从现在开始，请求正式进入了我的服务器。(请求行，请求头，请求体)
+---
 
-6. Tomcat接受前端的请求(请求的格式类似下面这个)，然后将字节变成Request/Response
-```http
-POST /api/mood HTTP/1.1
-Host: 6ea2367d.r30.cpolar.top
-Content-Type: application/json
-Content-Length: 23
-
-{"username": "zzn16", "text": "今天天气真好！"}
+6. 进入Java：Tomcat开始干活：
+[后端代码DemoApplication.java](../backend-java/src/main/java/com/example/demo/DemoApplication.java)
+请求进入之后，在这里的
+```java
+@SpringBootApplication
+public class DemoApplication {
+  public static void main(String[] args) {
+    SpringApplication.run(DemoApplication.class, args);
+  }
+}
 ```
-7. Servlet 容器分发到 Spring —— DispatcherServlet（总调度）
-spring这里看了一下filter，发现符合规则，所以就让这个消息传入，
+这一段内容启动内置 Tomcat，并把 Spring MVC 挂上去。在接收到请求之后，Tomcat会解析对应的请求，把他变成：
+```plaintxt
+请求行：POST /api/mood HTTP/1.1
+
+headers：Content-Type: application/json
+
+body：{"username":"zzn16","text":"..."}
+```
+然后回生成类似这样的对象：
+```plaintext
+HttpServletRequest req
+HttpServletResponse resp
+```
+7. 进入spring
+Tomcat解析之后，会把请求交给DispatcherServlet这个总调度。通过
+```plaintxt
+Filter（过滤器）
+→ DispatcherServlet（总调度）
+→ HandlerMapping（找谁处理）
+→ HandlerAdapter（怎么调用）
+→ 参数解析（JSON变对象）
+→ 调用 Controller 方法
+→ 返回值序列化成 JSON
+→ 写回响应
+```
+
+8. spring再进行一次路由匹配
 [后端代码MoodController.java](../backend-java/src/main/java/com/example/demo/controller/MoodController.java)
+Spring 会做一次“路由匹配”：
 
+`/api` + `/mood` → `/api/mood`
+`HTTP` 方法是 `POST`
+所以命中 `submitMood(...)`
 
+9. 和python进行通讯
+[后端代码MoodController.java](../backend-java/src/main/java/com/example/demo/controller/MoodController.java)
+```java
+    @PostMapping("/mood")
+    public MoodRecord submitMood(@RequestBody Map<String, String> payload) {
+        String username = payload.get("username");
+        String text = payload.get("text");
+        System.out.println("收到前端请求: " + text);
+        // 1. 呼叫 Python 小弟 (FastAPI)
+        RestTemplate restTemplate = new RestTemplate();
+        String pythonUrl = "http://localhost:8000/analyze";
+        // 准备发给 Python 的数据
+        Map<String, String> pythonPayload = Map.of("text", text);
+        // 拿到 Python 的结果
+        Map aiResult = restTemplate.postForObject(pythonUrl, pythonPayload, Map.class);
+        // 2. 数据转换与封装
+        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        MoodRecord newRecord = new MoodRecord(
+            now,
+            text,
+            (Integer) aiResult.get("score"),           
+            (String) aiResult.get("lucky_color"),      
+            (String) aiResult.get("ai_comment")        
+        );
+```
+字面意思，这个直接可以与python进行通讯，
+由于`uvicorn main:app --host 0.0.0.0 --port 8000`，所以python的地址是`http://localhost:8000/analyze`，然后就可以将数据与python进行交互，交互完成之后python会返回
+```json
+{
+  "score": 85,
+  "lucky_color": "blue",
+  "ai_comment": "今天心情不错"
+}
+```
+10. 保存到硬盘
+[后端代码FileService.java](../backend-java/src/main/java/com/example/demo/utils/FileService.java)
+```java
+// 3. 保存到硬盘
+fileService.saveRecord(username, newRecord);
+```
 
+11. 返回给Vue
+[后端代码MoodController.java](../backend-java/src/main/java/com/example/demo/controller/MoodController.java)
+```java
+// 4. 返回给 Vue
+return newRecord;
+```
 
+---
+这个就是一个http请求的一生，也就是这个内容到了我的服务器之后如何来回运动的。
 
+# 启动方法
+项目启动有两种方法，一种是本地进行调试，一种是进行发布。
 
+## 本地调试
+1，启动python服务，FastAPI服务。
+2，启动java后端。
+3，启动前端服务。
+然后打开之后就可以访问了。
+```bash
+### 启动python服务，FastAPI服务
+conda activate stack
+cd ~/Full_stack_study/mood-station/backend-python
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
 
+```bash
+### 启动java后端
+cd ~/Full_stack_study/mood-station/backend-java
+mvn spring-boot:run
+```
 
+```bash
+### 启动前端服务
+cd ~/Full_stack_study/mood-station/frontend
+npm run dev
+```
 
+## 发布
+1，启动python服务，FastAPI服务。
+2，启动java后端。
+3，用生产构建 + Spring Boot 托管前端
+4，使用cpolar进行推送。
 
+```bash
+### 启动python服务，FastAPI服务
+conda activate stack
+cd ~/Full_stack_study/mood-station/backend-python
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
 
+```bash
+### 启动java后端
+cd ~/Full_stack_study/mood-station/backend-java
+mvn spring-boot:run
+```
 
+```bash
+### 启动前端服务
+cd ~/Full_stack_study/mood-station/frontend
+npm run build
+cd ~/Full_stack_study/mood-station
+rm -rf backend-java/src/main/resources/static/*
+cp -r frontend/dist/* backend-java/src/main/resources/static/
+cd ~/Full_stack_study/mood-station/backend-java
+mvn spring-boot:run
+```
 
-
-
-
-
-
-
-
-
-
+```bash
+### 使用cpolar进行推送
+cpolar http 8080
+```
+# 添加功能(这个非常重要，主要学习项目的维护和重构)
 
 
 
