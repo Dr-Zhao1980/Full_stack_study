@@ -1,0 +1,12 @@
+/home/zzn16/Full_stack_study/上一个完整项目，重构ing/mood-station/frontend
+
+
+/home/zzn16/Full_stack_study/上一个完整项目，重构ing/mood-station/node_modules
+
+target
+
+
+__pycache__
+
+
+tree -h -I 'target|frontend|node_modules|__pycache__|typescript|type-fest'

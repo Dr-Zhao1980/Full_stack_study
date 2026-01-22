@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 这个是一个xml的内容，版本是1.0，同时使用的是UTF-8的编码 -->
+
+
+
+
+
+
+
+
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!-- 这个是文件的根节点，描述了项目的基本信息 -->
+    <!-- xmlns表示所有的命名要从maven中导入 -->
+    <!-- xsi表示方位规则校验 -->
+    <!-- 这个内容相当于按照官方的规则进行规定命名和规则，换而言之相当于下载官方说明书 -->
+
+
+
+
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.1</version>
+        <relativePath/> 
+    </parent>
+    <!-- 继承父类，相当于下载了官方的依赖管理配置 -->
+
+
+
+
+
+
+
+
+
+
+    <groupId>com.drzhao</groupId>
+    <artifactId>portal-backend</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>portal-backend</name>
+    <description>Dr. Zhao Personal Portal Backend</description>
+    <!-- 
+    这是这个项目的自我介绍，在Maven的世界里，这三个坐标（GAV）是独一无二的。
+    groupId (集团名)：com.drzhao。代表这是“赵氏集团”旗下的产业。
+    artifactId (店名)：portal-backend。这是这家具体分店的名字，叫“门户网站后台”。
+    version (状态)：0.0.1-SNAPSHOT。 
+    -->
+
+
+
+
+
+
+
+
+
+
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+    <!-- 全局变量定义：相当于使用Java17，定义了全局变量 -->
+
+
+
+
+
+
+
+
+
+
+    <dependencies>
+    <!-- 项目依赖 -->
+
+
+
+
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- Web Starter：它引入了 Tomcat(一个内置的 Web 服务器)。 -->
+
+
+
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <!-- 安全检查:security -->
+
+
+
+
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+        <!-- JWT API：用于生成和解析 JSON Web Tokens (JWT) -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- JWT 实现：提供 JWT 的具体实现 -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- JWT Jackson：处理 JWT 的 JSON 序列化/反序列化 -->
+<!--
+这三个功能(JWT)可以构建出一个数字身份证系统
+1. 生成身份证（签发 JWT）
+2. 验证身份证（解析 JWT）
+3. 检查身份证是否过期（验证 JWT 的有效期）
+-->
+
+
+
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <!-- JPA：提供对象关系映射(ORM)支持,把 Java 对象自动变成数据库里的表. -->
+
+
+
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- H2：内存数据库，用于开发和测试,一个极简的、临时的内存数据库 -->
+
+
+
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- Lombok：简化 Java 代码，自动生成 getter、setter 等 -->
+        <!-- 
+        在 Java 里，每定义一个变量（比如 name），通常都要写 getName(), setName(), toString() 等等十几行代码。
+        有了 Lombok，你只需要在类头上加一个注解 @Data，编译的时候它就会自动帮你把那些十几行代码补全。
+        <optional>true</optional>：意思是“这个工具只在这个项目里用，如果别人引用了我的项目，别人不需要下载这个工具”。 
+        -->
+
+
+
+
+    </dependencies>
+
+
+
+
+
+
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+<!--
+这个相当于一个打包机器，用来打包整个项目
+Spring Boot Maven Plugin：负责把整个项目打包成一个可执行的 JAR 文件,
+然后，<artifactId>lombok</artifactId>来剔除了lombok这个工具.    
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+整体来讲，这个文件就是
+只要有这个文件在，任何一个程序员（或者是你），在任何一台安装了 Java 和 Maven 的电脑上，只需要输入一行命令：
+mvn clean package
+Maven 就会根据这张蓝图：
+自动下载 所有的 Web 服务器、数据库驱动、安全组件。
+自动编译 你的 Java 代码。
+自动组装 所有部件。
+吐出 一个名为 portal-backend-0.0.1-SNAPSHOT.jar 的文件。
+-->

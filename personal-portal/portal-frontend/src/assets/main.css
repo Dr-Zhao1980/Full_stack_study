@@ -1,0 +1,51 @@
+/* 全局变量定义：定义这一套“皮肤”的主色调 */
+:root {
+  --primary-color: #42b983;   /* Vue 绿 */
+  --secondary-color: #2c3e50; /* 深蓝灰 */
+  --bg-color: #f5f7fa;        /* 浅灰背景 */
+  --text-color: #2c3e50;      /* 主要文字颜色 */
+  --card-bg: #ffffff;         /* 卡片背景 */
+}
+
+/* 基础重置 */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased; /* 让字体更平滑 */
+}
+
+/* 链接样式去掉下划线 */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 按钮的基础样式 */
+button {
+  font-family: inherit;
+}
+
+/* 滚动条美化 (可选) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa; 
+}

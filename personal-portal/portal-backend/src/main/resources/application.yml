@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: portal-backend
+  # H2 数据库配置 (数据将存储在项目根目录的 data/portal.mv.db 文件中)
+  datasource:
+    url: jdbc:h2:file:./data/portal;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update # 自动创建或更新表结构
+    show-sql: true     # 在控制台打印 SQL，方便你调试
+
+  # 开启 H2 控制台 (浏览器访问 localhost:8080/h2-console 可视化查看数据)
+  h2:
+    console:
+      enabled: true
+
+# 自定义 JWT 配置
+jwt:
+  secret: MySuperSecretKeyForDrZhaoPortal2026DoNotShareThisMustBeLongEnough # 密钥必须足够长
+  expiration: 86400000 # Token 有效期 24小时 (毫秒)
